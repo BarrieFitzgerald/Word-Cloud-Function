@@ -1,0 +1,54 @@
+word.cloud <- function(file.name) {
+        ## working directory
+        setwd("C:/Users/bdfitzgerald/Desktop")
+        ## Libraries
+        library(tm)
+        library(wordcloud)
+        ## Clean up the text
+        clean.text = function(x)
+        {
+                # tolower
+                x = tolower(x)
+                # remove rt
+                x = gsub("rt", "", x)
+                # remove at
+                x = gsub("@\\w+", "", x)
+                # remove punctuation
+                x = gsub("[[:punct:]]", "", x)
+                # remove numbers
+                x = gsub("[[:digit:]]", "", x)
+                # remove links http
+                x = gsub("http\\w+", "", x)
+                # remove tabs
+                x = gsub("[ |\t]{2,}", "", x)
+                # remove blank spaces at the beginning
+                x = gsub("^ ", "", x)
+                # remove blank spaces at the end
+                x = gsub(" $", "", x)
+                return(x)
+        }
+        ## load the file
+        file <- read.csv(file.name, header = FALSE)
+        colnames(file) <- "text"
+        ## This needs to be done or otherwise it won't work
+        file$text <- as.factor(file$text)
+        ## cleaning the text
+        file.fix = clean.text(file$text)
+        ## collapsing space
+        file = paste(file.fix, collapse = " ")
+        ## removing certain words
+        file = removeWords(file, 
+                           c(stopwords("english"), "the", "and", "or", "in",
+                             "with", "it"))
+        ## process of building a cloud
+        corpus = Corpus(VectorSource(file))
+        tdm = TermDocumentMatrix(corpus)
+        tdm = as.matrix(tdm)
+        ## word cloud
+        commonality.cloud(tdm, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+}
+
+
+
+
+
