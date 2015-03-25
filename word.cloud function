@@ -1,53 +1,36 @@
-word.cloud <- function(file.name) {
-        ## working directory
-        setwd("C:/Users/bdfitzgerald/Desktop")
-        ## Libraries
-        library(tm)
-        library(wordcloud)
-        ## Clean up the text
-        clean.text = function(x)
-        {
-                # tolower
-                x = tolower(x)
-                # remove rt
-                x = gsub("rt", "", x)
-                # remove at
-                x = gsub("@\\w+", "", x)
-                # remove punctuation
-                x = gsub("[[:punct:]]", "", x)
-                # remove numbers
-                x = gsub("[[:digit:]]", "", x)
-                # remove links http
-                x = gsub("http\\w+", "", x)
-                # remove tabs
-                x = gsub("[ |\t]{2,}", "", x)
-                # remove blank spaces at the beginning
-                x = gsub("^ ", "", x)
-                # remove blank spaces at the end
-                x = gsub(" $", "", x)
-                return(x)
-        }
-        ## load the file
-        file <- read.csv(file.name, header = FALSE)
-        colnames(file) <- "text"
-        ## This needs to be done or otherwise it won't work
-        file$text <- as.factor(file$text)
-        ## cleaning the text
-        file.fix = clean.text(file$text)
-        ## collapsing space
-        file = paste(file.fix, collapse = " ")
-        ## removing certain words
-        file = removeWords(file, 
-                           c(stopwords("english"), "the", "and", "or", "in",
-                             "with", "it"))
-        ## process of building a cloud
-        corpus = Corpus(VectorSource(file))
-        tdm = TermDocumentMatrix(corpus)
-        tdm = as.matrix(tdm)
-        ## word cloud
-        commonality.cloud(tdm, random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+word.cloud <- function(file) {
+        ## import the file
+        file <- read.csv(file, header = FALSE)
+        ## turn the file into a Corpus class file
+        file <- Corpus(DataframeSource(file))
+        ## text mining
+        file <- tm_map(file, tolower)
+        file <- tm_map(file, function(x)removeWords(x, stopwords("english")))
+                ## creating words that need to be removed
+        words.need.remove <- c("the", "and", "or", "in", "'s", "'ve", "don't", "however",
+                               "with", "brian", "he", "his", "within", "technology",
+                               "information", "info", "tech", "it", "will", "cio", "—")
+        file <- tm_map(file, removeWords, words.need.remove)
+        file <- tm_map(file, removePunctuation)
+        file <- tm_map(file, removeNumbers)
+        file <- tm_map(file, stripWhitespace)
+        trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+        file <- tm_map(file, trim)
+        ## Adjusting the structure
+        file <- Corpus(VectorSource(file))
+        ## Frequeceny of the words
+        tdm <- TermDocumentMatrix(file)
+        ## Setting teh matrix
+        m <- as.matrix(tdm)
+        v <- sort(rowSums(m), decreasing = TRUE)
+        d <- data.frame(word = names(v), freq = v)
+        ## Setting the colors
+        color <- brewer.pal(8, "Dark2")
+        ## producing the word cloud
+        wordcloud(d$word, d$freq, max.words = nrow(d), 
+                  min.freq = 1, random.order = FALSE, 
+                  rot.per = 0.15, color = color)
 }
-
 
 
 
