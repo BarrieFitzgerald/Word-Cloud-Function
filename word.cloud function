@@ -7,9 +7,7 @@ word.cloud <- function(file) {
         file <- tm_map(file, tolower)
         file <- tm_map(file, function(x)removeWords(x, stopwords("english")))
                 ## creating words that need to be removed
-        words.need.remove <- c("the", "and", "or", "in", "'s", "'ve", "don't", "however",
-                               "with", "brian", "he", "his", "within", "technology",
-                               "information", "info", "tech", "it", "will", "cio", "—")
+        words.need.remove <- c("") ## enter in words that need to be removed
         file <- tm_map(file, removeWords, words.need.remove)
         file <- tm_map(file, removePunctuation)
         file <- tm_map(file, removeNumbers)
