@@ -1,4 +1,9 @@
 word.cloud <- function(file) {
+        ## Set working directory
+        setwd() ## enter the working directory
+        ## libraries utilized
+        library(tm)
+        library(wordcloud)
         ## import the file
         file <- read.csv(file, header = FALSE)
         ## turn the file into a Corpus class file
