@@ -1,16 +1,21 @@
 word.cloud <- function(file) {
         ## Set working directory
         setwd() ## enter the working directory
+        
         ## libraries utilized
         library(tm)
         library(wordcloud)
+        
         ## import the file
         file <- read.csv(file, header = FALSE)
+        
         ## turn the file into a Corpus class file
         file <- Corpus(DataframeSource(file))
+        
         ## text mining
         file <- tm_map(file, tolower)
         file <- tm_map(file, function(x)removeWords(x, stopwords("english")))
+        
                 ## creating words that need to be removed
         words.need.remove <- c("") ## enter in words that need to be removed
         file <- tm_map(file, removeWords, words.need.remove)
@@ -19,16 +24,21 @@ word.cloud <- function(file) {
         file <- tm_map(file, stripWhitespace)
         trim <- function (x) gsub("^\\s+|\\s+$", "", x)
         file <- tm_map(file, trim)
+        
         ## Adjusting the structure
         file <- Corpus(VectorSource(file))
+        
         ## Frequeceny of the words
         tdm <- TermDocumentMatrix(file)
-        ## Setting teh matrix
+        
+        ## Setting the matrix
         m <- as.matrix(tdm)
         v <- sort(rowSums(m), decreasing = TRUE)
         d <- data.frame(word = names(v), freq = v)
+        
         ## Setting the colors
         color <- brewer.pal(8, "Dark2")
+        
         ## producing the word cloud
         wordcloud(d$word, d$freq, max.words = nrow(d), 
                   min.freq = 1, random.order = FALSE, 
