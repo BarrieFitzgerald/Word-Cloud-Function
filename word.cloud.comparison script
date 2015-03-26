@@ -1,0 +1,55 @@
+
+## set the working directory
+setwd("V:/dept/SRA/Enrollment/Enrollment Management/CONHS Analytics/SOI Analysis")
+## libraries utilized
+library(tm)
+library(wordcloud)
+
+## import the file
+file <- read.csv(___, header = FALSE) ## enter your file
+file <- file[-1,] # remove the header since headers are read in
+subset1 <- subset(file, file$V1 == "condition", 3) ## subset base on criteria you need
+subset1$V3 <- as.factor(subset1$V3)
+subset1 <- subset1$V3 
+    ## Note you will need to continue to subset untill all like variables are subsetted out
+file <- c(paste(subset1, collapse = " "), ...)
+
+## turn the file into a Corpus class file
+file <- Corpus(VectorSource(file))
+
+## text mining
+file <- tm_map(file, tolower)
+file <- tm_map(file, function(x)removeWords(x, stopwords("english")))
+
+## creating words that need to be removed
+words.need.remove <- c("the", "and", "or", "in", "'s", "'ve", "don't", "however",
+                       "with", "can", "also", "within")
+file <- tm_map(file, removeWords, words.need.remove)
+file <- tm_map(file, removePunctuation)
+file <- tm_map(file, removeNumbers)
+file <- tm_map(file, stripWhitespace)
+trim <- function (x) {gsub("^\\s+|\\s+$", "", x)}
+file <- tm_map(file, trim)
+
+## Adjusting the structure
+file <- Corpus(VectorSource(file))
+
+## Frequeceny of the words
+tdm <- TermDocumentMatrix(file)
+
+## Setting teh matrix
+m <- as.matrix(tdm)
+colnames(m) <- c("NURS2700A", "NURS2700IB", "NURS2700IC")
+
+## Setting the colors
+color <- brewer.pal(8, "Dark2")
+
+## producing the word cloud
+    ## Comparison cloud
+comparison.cloud(m, random.order = FALSE, colors = color)
+    ## Commonality cloud
+commonality.cloud(m, random.order = FALSE, colors = color)
+
+
+
+
