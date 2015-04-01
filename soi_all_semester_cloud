@@ -1,5 +1,5 @@
 ## set the working directory
-setwd("V:/dept/SRA/Enrollment/Enrollment Management/CONHS Analytics/SOI Analysis")
+setwd()
 
 ## libraries utilized
 library(tm)
@@ -26,17 +26,12 @@ file_load_prep <- function(a, b, c) {
         
         ## Need to collapse the data
         file <- paste(file$COMMENTS, collapse = "")
-}
 
-
-file_structure <- function(d) {
         ## turn the file into a corpus file
-        file <- Corpus(VectorSource(d))
-}
-
-text_mining <- function(d) {
+        file <- Corpus(VectorSource(file))
 
         ## Text Mining
+        d <- file
         d <- tm_map(d, tolower)
         d <- tm_map(d, function(x)removeWords(x, stopwords("english")))
         
@@ -70,9 +65,9 @@ cloud_creation <- function(e, f, g) {
         
         ## Exporting the word cloud/producing it
         name <- paste(e,"-",f,".png")
-        png(name, width = 600, height = 600, units = 'px')
+        png(name, width = 1000, height = 1000, units = 'px')
         wordcloud(file$word, file$freq, max.words = nrow(file), 
-                  min.freq = g, random.order = FALSE, 
+                  min.freq = 2, random.order = FALSE, 
                   rot.per = 0.15, color = color)
         dev.off()
 }
