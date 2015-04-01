@@ -1,0 +1,66 @@
+all_semester_analysis <- function(semester, question) {
+        
+        ## set the working directory
+        setwd() #Note need to set working directory
+        
+        ## libraries utilized
+        library(tm)
+        library(wordcloud)
+        
+        ## import the file
+        file <- read.csv(     , header = TRUE) ## Need to load your file
+        file$SURVEY_NAME <- gsub("SOI_", "", file$SURVEY_NAME)
+        file$SURVEY_NAME <- gsub("S-", "", file$SURVEY_NAME)
+        file$semester <- as.numeric(substr(file$BANNER_TERM,6,6))
+        
+        ## subset to semester
+        file <- subset(file, 
+                       file$semester == semester &  
+                               file$QUESTION_NO == question, 
+                       5)
+        
+        ## turn the data into a factor
+        file$COMMENTS <- as.factor(file$COMMENTS)
+        
+        ## Need to collapse the data
+        file <- paste(file$COMMENTS, collapse = "")
+        
+        ## turn the file into a corpus file
+        file <- Corpus(VectorSource(file))
+        
+        ## Text Mining
+        file <- tm_map(file, tolower)
+        file <- tm_map(file, function(x)removeWords(x, stopwords("english")))
+                ## creating words that need to be removed
+        words.need.remove <- c("the", "and", "or", "in", "'s", "'ve", "don't", "however",
+                               "with", "she", "he", "teacher", "instructor", "professor", "students", 
+                               "class", "course", "mrs", "ms", "mr", "his", "her", "classes")
+        file <- tm_map(file, removeWords, words.need.remove)
+        file <- tm_map(file, removePunctuation)
+        file <- tm_map(file, removeNumbers)
+        file <- tm_map(file, stripWhitespace)
+        trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+        file <- tm_map(file, trim)
+        
+        ## Adjusting the structure
+        file <- Corpus(VectorSource(file))
+        
+        ## Frequeceny of the words
+        tdm <- TermDocumentMatrix(file)
+        
+        ## Setting teh matrix
+        m <- as.matrix(tdm)
+        v <- sort(rowSums(m), decreasing = TRUE)
+        d <- data.frame(word = names(v), freq = v)
+        
+        ## Setting the colors
+        color <- brewer.pal(8, "Dark2")
+                
+        ## Exporting the word cloud/producing it
+        name <- paste(paste(semester,question, sep = "_"), "png", sep = ".")
+        png(name, width = 600, height = 600, units = 'px')
+        wordcloud(d$word, d$freq, max.words = nrow(d), 
+                  min.freq = 25, random.order = FALSE, 
+                  rot.per = 0.15, color = color)
+        dev.off()
+}
