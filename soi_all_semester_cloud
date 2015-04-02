@@ -1,15 +1,14 @@
-## set the working directory
-setwd()
-
-## libraries utilized
-library(tm)
-library(wordcloud)
-
-
-## import the file
-file_load_prep <- function(a, b, c) {
+question_cloud <- function(b, c) {
+        
+        ## set the working directory
+        setwd("V:/dept/SRA/Enrollment/Enrollment Management/CONHS Analytics/SOI Analysis")
+        
+        ## libraries utilized
+        library(tm)
+        library(wordcloud)
+        
         ## loads the file
-        file <- read.csv(a, header = TRUE)
+        file <- read.csv("./soi_comments.csv", header = TRUE)
 
         ## cleans up the data
         file$SURVEY_NAME <- gsub("SOI_", "", file$SURVEY_NAME)
@@ -57,16 +56,14 @@ file_load_prep <- function(a, b, c) {
         m <- as.matrix(tdm)
         v <- sort(rowSums(m), decreasing = TRUE)
         d <- data.frame(word = names(v), freq = v)
-}
 
-cloud_creation <- function(e, f, g) {
         ## Setting the colors
         color <- brewer.pal(8, "Dark2")
         
         ## Exporting the word cloud/producing it
-        name <- paste(e,"-",f,".png")
+        name <- paste(b,"-",c,".png")
         png(name, width = 1000, height = 1000, units = 'px')
-        wordcloud(file$word, file$freq, max.words = nrow(file), 
+        wordcloud(d$word, d$freq, max.words = nrow(d), 
                   min.freq = 2, random.order = FALSE, 
                   rot.per = 0.15, color = color)
         dev.off()
