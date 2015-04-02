@@ -1,14 +1,14 @@
 question_cloud <- function(b, c) {
         
         ## set the working directory
-        setwd("V:/dept/SRA/Enrollment/Enrollment Management/CONHS Analytics/SOI Analysis")
+        setwd() ## set the working directory
         
         ## libraries utilized
         library(tm)
         library(wordcloud)
         
         ## loads the file
-        file <- read.csv("./soi_comments.csv", header = TRUE)
+        file <- read.csv(, header = TRUE) ## insert the file needed
 
         ## cleans up the data
         file$SURVEY_NAME <- gsub("SOI_", "", file$SURVEY_NAME)
