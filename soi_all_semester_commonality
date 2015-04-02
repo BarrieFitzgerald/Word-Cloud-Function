@@ -1,15 +1,14 @@
-## set the working directory
-setwd() ## place the working directory
-
-## libraries utilized
-library(tm)
-library(wordcloud)
-
-
-## import the file
-file_load_prep <- function(b) {
+term_common_cloud <- function(b) {
+        
+        ## set the working directory
+        setwd() ## set the working directory
+        
+        ## libraries utilized
+        library(tm)
+        library(wordcloud)
+        
         ## loads the file
-        file <- read.csv(, header = TRUE) ## insert the file name
+        file <- read.csv(, header = TRUE) ## insert the file needed
 
         ## cleans up the data
         file$SURVEY_NAME <- gsub("SOI_", "", file$SURVEY_NAME)
